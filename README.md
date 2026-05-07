@@ -1,21 +1,19 @@
-# tg-archiv-style — Inside-Container Installer
+Here’s the English version of your text:
 
-Du wolltest die CSS direkt in Sonarr "reinklatschen", ohne Reverse-Proxy davor.
-Hier sind zwei Wege dafür — beide injizieren das CSS direkt in Sonarr's
-`index.html` im Container, also funktioniert's mit deinem Cloudflare-Tunnel-Setup
-ohne Modifikation am Tunnel.
+---
 
-> **Wichtig vorab:** Sonarr's eingebautes Theme-Dropdown (Auto / Light / Dark)
-> ist hardcoded und kann nicht erweitert werden. Themes leben als TS-Objekte
-> im JS-Bundle, nicht als externe CSS-Files. Was hier passiert: Wir schmuggeln
-> ein zusätzliches Stylesheet in die HTML rein, das *zusätzlich* zum gewählten
-> Sonarr-Theme geladen wird und es überschreibt. Praktisch das gleiche Ergebnis,
-> nur ohne UI-Picker.
+# Inside-Container Installer
 
-## Methode 1: install.sh — schnell, einmalig
+> **Important:** Sonarr’s built-in theme dropdown (Auto / Light / Dark)
+> is hardcoded and cannot be extended. Themes exist as TypeScript objects
+> inside the JS bundle, not as external CSS files. What this does instead:
+> we sneak an additional stylesheet into the HTML, which gets loaded *on top of*
+> the selected Sonarr theme and overrides it.
 
-Patcht den laufenden Container *jetzt sofort*. Eine Container-Recreate
-(z.B. nach Image-Update) wischt's weg → Script danach erneut ausführen.
+## Method 1: install.sh — quick, one-time
+
+Patches the running container *right now*. Recreating the container
+(e.g. after an image update) could wipe the changes → run the script again afterward if needed.
 
 ```bash
 chmod +x install.sh
@@ -24,56 +22,57 @@ chmod +x install.sh
 ./install.sh sonarr --uninstall      # remove the patch
 ```
 
-Voraussetzung: Du hast Shell-Zugriff auf den Docker-Host und Docker-CLI.
+Requirement: You have shell access to the Docker host and Docker CLI.
 
-Das Script:
-1. Findet den UI-Ordner im Container (probiert die üblichen Pfade durch,
-   sucht als Fallback per `find /app -name index.html -path "*UI*"`)
-2. Kopiert `tg-archiv-style.css` in den UI-Ordner
-3. Fügt einen `<link>`-Tag vor `</head>` in `index.html` ein, mit einem
-   Marker-Attribut um Doppel-Injects zu vermeiden
+The script:
 
-Browser-Tab → harter Reload (Strg+Shift+R) → fertig.
+1. Locates the UI directory inside the container (tries common paths,
+   falls back to `find /app -name index.html -path "*UI*"`).
+2. Copies `tg-archiv-style.css` into the UI directory.
+3. Injects a `<link>` tag before `</head>` in `index.html`, using a marker
+   attribute to prevent duplicate injections.
 
-## Methode 2: custom-cont-init Script — persistent für linuxserver-Images
+Browser tab → hard reload (Ctrl+Shift+R for Mac or Ctrl + F5 for Windows) → done.
 
-Dieser Weg überlebt Container-Updates automatisch. Funktioniert nur mit
-**linuxserver.io** Images (lscr.io/linuxserver/sonarr usw.), weil der die
-`custom-cont-init.d`-Mechanik bereitstellt.
+## Method 2: custom-cont-init script — for linuxserver images
+
+This approach survives container updates automatically. Works only with
+**linuxserver.io** images (e.g. `lscr.io/linuxserver/sonarr` or `...../radarr`) because they provide
+the `custom-cont-init.d` mechanism.
 
 ### Setup
 
-Pro Container (Sonarr und Radarr separat):
+Per container (Sonarr and Radarr separately):
 
 ```bash
-# 1. Auf den Docker-Host kopieren — z.B. nach Sonarr's config-Ordner
+# 1. Copy to the Docker host — e.g. into Sonarr's config folder
 cp tg-archiv-style.css /your/sonarr/config/
 
-# 2. Init-Script in den custom-Ordner
+# 2. Place init script in the custom folder
 mkdir -p /your/sonarr/config/custom-cont-init.d
 cp 99-tg-theme.sh /your/sonarr/config/custom-cont-init.d/
 chmod +x /your/sonarr/config/custom-cont-init.d/99-tg-theme.sh
 
-# 3. Container muss DOCKER_MODS=linuxserver/mods:universal-package-install
-#    NICHT brauchen — custom-cont-init.d ist eingebaut bei linuxserver-Images.
-#    Aber: Falls dein Container restriktiv konfiguriert ist (DOCKER_MODS_VERSION 
-#    o.ä.), eventuell einmal überprüfen.
+# 3. Container does NOT need DOCKER_MODS=linuxserver/mods:universal-package-install
+#    — custom-cont-init.d is built into linuxserver images.
+#    However: if your container is configured restrictively (DOCKER_MODS_VERSION 
+#    etc.), it may be worth double-checking.
 
-# 4. Container neu starten
-docker restart sonarr
+# 4. Restart container
+docker restart {containername}
 ```
 
-Same Sache für Radarr unter `/your/radarr/config/`.
+Same setup for Radarr under `/your/radarr/config/`.
 
-Das Script läuft jetzt bei jedem Container-Start (auch nach Updates), patcht die
-UI, fertig. Wenn du das Theme aktualisieren willst, ersetze einfach die
-`tg-archiv-style.css` im config-Ordner und restart den Container.
+The script now runs on every container start (including after updates), patches
+the UI, and that’s it. If you want to update the theme, just replace
+`tg-archiv-style.css` in the config folder and restart the container.
 
-### Falls dein Image kein `custom-cont-init.d` hat
+### If your image does not support `custom-cont-init.d`
 
-Bei nicht-linuxserver Images (z.B. `hotio/sonarr`, `ghcr.io/randomwhatever/...`)
-gibt's die Mechanik nicht. Dort musst du auf Methode 1 (install.sh nach jedem
-Update neu ausführen) zurückfallen, oder einen Cron-Job auf dem Host:
+For non-linuxserver images (e.g. `hotio/sonarr`, `ghcr.io/randomwhatever/...`),
+this mechanism is not available. In that case, fall back to Method 1
+(run `install.sh` after every update if needed), or use a cron job on the host:
 
 ```bash
 # crontab -e
@@ -81,26 +80,24 @@ Update neu ausführen) zurückfallen, oder einen Cron-Job auf dem Host:
 0 4 * * *  /path/to/install.sh sonarr radarr   # daily safety re-patch
 ```
 
-## Methode 3: Stylus-Browser-Extension — falls dir das alles zu viel ist
+## Method 3: Stylus browser extension — if all of this is overkill
 
-Im README.md im selben Zip beschrieben. Funktioniert sofort, nur im Browser
-mit der Extension.
+Works instantly, but only in the browser with the extension.
 
 ---
 
-## Fragen / Probleme
+## Questions / Issues
 
-- **"Hat funktioniert, aber nach Sonarr-Update ist's wieder das alte Design"**
-  → Methode 2 nicht eingerichtet, oder Sonarr/Radarr hat größere
-  Frontend-Änderung gemacht. Erst install.sh nochmal versuchen, dann ggf.
-  Selektoren in der CSS anpassen (Browser DevTools → neuen Klassennamen-Prefix
-  finden → in CSS unten ergänzen).
+* **"It worked, but after a Sonarr update it reverted"**
+  → Method 2 not set up, or Sonarr/Radarr introduced major frontend changes.
+  Try `install.sh` again first, then adjust CSS selectors if needed
+  (Browser DevTools → find new class name prefixes → update CSS accordingly).
 
-- **"Wie sehe ich ob's gepatcht ist?"**
-  → `docker exec sonarr grep tg-archiv UI/index.html` — sollte den
-  injizierten `<link>` zeigen. (Pfad ggf. anpassen wenn UI woanders liegt.)
+* **"How do I check if it's patched?"**
+  → `docker exec sonarr grep tg-archiv UI/index.html` — should show
+  the injected `<link>`. (Adjust path if the UI is located elsewhere.)
 
-- **"Mein Container ist `hotio/sonarr`"**
-  → Der UI-Pfad ist meistens `/app/bin/Sonarr/UI` (Großschreibung beachten).
-  install.sh findet das automatisch. Methode 2 geht nicht direkt; nutze
-  install.sh + Cron, oder Stylus.
+* **"My container is `hotio/sonarr`"**
+  → The UI path is usually `/app/bin/Sonarr/UI` (case-sensitive).
+  `install.sh` detects this automatically. Method 2 won’t work directly;
+  use `install.sh` + cron, or Stylus instead.
