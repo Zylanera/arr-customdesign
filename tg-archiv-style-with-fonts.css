@@ -1,0 +1,1061 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&display=swap');
+
+/* ===========================================================================
+   tg-archiv-style.css
+   ---------------------------------------------------------------------------
+   Warm-dark amber theme for Sonarr / Radarr / Prowlarr / Lidarr / Readarr.
+   Inspired by the tg-archiv WebUI style.
+
+   How it works:
+   - The *arr apps share a common frontend (Servarr). They all use CSS-Modules
+     with hashed class names (e.g. "PageSidebar_sidebar__a1b2c3"), so we
+     match by *prefix* via [class*="..."] attribute selectors. These are
+     stable across patch versions; they may break on major frontend rewrites.
+   - We override the app's CSS custom properties (CSS variables) where
+     possible. Those names are stable.
+   - Color palette and typography mirror the tg-archiv WebUI.
+
+   Tested against: Sonarr v4, Radarr v5 (both shipped 2024+)
+   =========================================================================== */
+
+:root,
+html {
+  /* ---------- Palette (mirrors tg-archiv) ---------- */
+  --tg-bg:        #0d0e0c;   /* page background */
+  --tg-bg-soft:   #15161366; /* panel background, alpha for grain */
+  --tg-bg-panel:  #1a1b18;   /* solid panel background */
+  --tg-bg-row:    #1f201d;   /* table row alt */
+  --tg-bg-hover:  #26271f;
+  --tg-fg:        #e8e3d6;   /* primary text */
+  --tg-fg-mute:   #8a8578;   /* secondary text */
+  --tg-fg-dim:    #5a5749;   /* tertiary / disabled */
+  --tg-line:      #2c2d27;   /* borders */
+  --tg-line-soft: #1f201c;
+  --tg-accent:    #d97706;   /* amber */
+  --tg-accent-hi: #f59e0b;   /* amber-bright */
+  --tg-accent-soft: #b6580a;
+  --tg-success:   #4d7c2a;
+  --tg-warn:      #b8761c;
+  --tg-error:     #b34a3a;
+  --tg-radius:    3px;
+
+  /* Fonts */
+  --tg-font-body: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto,
+                  "Helvetica Neue", Arial, sans-serif;
+  --tg-font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo,
+                  Consolas, "Courier New", monospace;
+  --tg-font-serif: "Instrument Serif", "Source Serif Pro", Georgia, serif;
+
+  /* ---------- Sonarr/Radarr CSS variables (overrides) ---------- */
+  /* These are the variable names used inside Servarr's stylesheets.
+     Overriding them propagates colors throughout the app. */
+  --themeBlue:       var(--tg-accent);
+  --themeDarkColor:  var(--tg-accent-soft);
+  --themeRed:        var(--tg-error);
+  --themeGreen:      var(--tg-success);
+
+  --pageBackground:                var(--tg-bg);
+  --pageFooterBackground:          var(--tg-bg-panel);
+  --pageFooterBackgroundColor:     var(--tg-bg-panel);
+  --pageBackgroundAlt:             var(--tg-bg-panel);
+
+  --textColor:                     var(--tg-fg);
+  --defaultColor:                  var(--tg-fg);
+  --disabledColor:                 var(--tg-fg-dim);
+  --dimColor:                      var(--tg-fg-mute);
+  --linkColor:                     var(--tg-accent-hi);
+  --linkHoverColor:                var(--tg-accent);
+
+  --primaryBackgroundColor:        var(--tg-bg);
+  --secondaryBackgroundColor:      var(--tg-bg-panel);
+
+  --toolbarColor:                  var(--tg-fg);
+  --toolbarBackgroundColor:        var(--tg-bg-panel);
+  --toolbarLabelColor:             var(--tg-fg-mute);
+  --toolbarMenuItemBackgroundColor:        var(--tg-bg-panel);
+  --toolbarMenuItemHoverBackgroundColor:   var(--tg-bg-hover);
+
+  --sidebarColor:                  var(--tg-fg);
+  --sidebarBackgroundColor:        var(--tg-bg-panel);
+  --sidebarActiveBackgroundColor:  var(--tg-bg-row);
+
+  --pageHeaderBackgroundColor:     var(--tg-bg-panel);
+  --pageSidebarBackground:         var(--tg-bg-panel);
+  --pageSidebarBackgroundColor:    var(--tg-bg-panel);
+
+  /* Buttons */
+  --defaultBackgroundColor:        var(--tg-bg-panel);
+  --defaultBorderColor:            var(--tg-line);
+  --defaultColorHover:             var(--tg-fg);
+  --defaultBackgroundColorHover:   var(--tg-bg-hover);
+
+  --primaryColor:                  #f6efdc;
+  --primaryBorderColor:            var(--tg-accent-soft);
+
+  --successBorderColor:            var(--tg-success);
+  --successBackgroundColor:        var(--tg-success);
+  --warningBorderColor:            var(--tg-warn);
+  --warningBackgroundColor:        var(--tg-warn);
+  --dangerColor:                   #f3d4cf;
+  --dangerBorderColor:             var(--tg-error);
+  --dangerBackgroundColor:         var(--tg-error);
+
+  /* Inputs */
+  --inputBackgroundColor:          var(--tg-bg);
+  --inputBorderColor:              var(--tg-line);
+  --inputHoverBorderColor:         var(--tg-accent);
+  --inputFocusBorderColor:         var(--tg-accent-hi);
+  --inputErrorBorderColor:         var(--tg-error);
+  --inputErrorBackgroundColor:     #2a1813;
+  --inputWarningBorderColor:       var(--tg-warn);
+  --inputWarningBackgroundColor:   #2a200f;
+
+  /* Tables */
+  --tableRowBackgroundColor:           var(--tg-bg-panel);
+  --tableRowAltBackgroundColor:        var(--tg-bg-row);
+  --tableRowHoverBackgroundColor:      var(--tg-bg-hover);
+  --tableHeaderBackgroundColor:        var(--tg-bg-panel);
+  --tableHeaderHoverBackgroundColor:   var(--tg-bg-hover);
+  --tableDividerColor:                 var(--tg-line);
+
+  /* Cards / posters */
+  --cardBackgroundColor:               var(--tg-bg-panel);
+  --cardAlternateBackgroundColor:      var(--tg-bg-row);
+  --cardCenterBackgroundColor:         var(--tg-bg-panel);
+  --cardShadowColor:                   #000;
+
+  /* Modals */
+  --modalBackdropBackgroundColor:      rgba(0,0,0,0.85);
+  --modalBackgroundColor:              var(--tg-bg-panel);
+  --modalCloseButtonHoverColor:        var(--tg-accent);
+
+  /* Menus */
+  --menuItemColor:                     var(--tg-fg);
+  --menuItemHoverColor:                var(--tg-accent-hi);
+  --menuItemHoverBackgroundColor:      var(--tg-bg-hover);
+
+  /* Progress bars */
+  --progressBarBackgroundColor:        var(--tg-bg-row);
+  --progressBarFrontTextColor:         #f6efdc;
+  --progressBarBackTextColor:          var(--tg-fg);
+  --progressBarPrimaryBackgroundColor: var(--tg-accent);
+  --progressBarInfoBackgroundColor:    var(--tg-accent-hi);
+  --progressBarSuccessBackgroundColor: var(--tg-success);
+  --progressBarWarningBackgroundColor: var(--tg-warn);
+  --progressBarDangerBackgroundColor:  var(--tg-error);
+  --progressBarPurpleBackgroundColor:  var(--tg-accent-soft);
+
+  /* Labels & badges */
+  --labelColor:                        #f6efdc;
+  --labelDefaultBackgroundColor:       var(--tg-bg-row);
+  --labelInfoBackgroundColor:          var(--tg-accent);
+  --labelSuccessBackgroundColor:       var(--tg-success);
+  --labelWarningBackgroundColor:       var(--tg-warn);
+  --labelDangerBackgroundColor:        var(--tg-error);
+
+  /* Misc */
+  --popoverBodyBackgroundColor:        var(--tg-bg-panel);
+  --popoverTitleBackgroundColor:       var(--tg-bg);
+  --popoverArrowBorderColor:           var(--tg-line);
+  --tooltipBackgroundColor:            var(--tg-bg);
+  --tooltipColor:                      var(--tg-fg);
+  --scrollbarBackgroundColor:          var(--tg-bg);
+  --scrollbarThumbBackgroundColor:     var(--tg-line);
+  --scrollbarHoverThumbBackgroundColor: var(--tg-fg-dim);
+
+  --calendarTodayBackgroundColor:      var(--tg-accent-soft);
+
+  /* Series/Movie type colors */
+  --seriesContinuingColor:             var(--tg-success);
+  --seriesEndedColor:                  var(--tg-fg-dim);
+}
+
+/* ============================================================
+   GLOBAL — body & typography
+   ============================================================ */
+
+html, body {
+  background: var(--tg-bg) !important;
+  color: var(--tg-fg) !important;
+  font-family: var(--tg-font-body) !important;
+}
+
+/* Subtle film-grain overlay, like in tg-archiv */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+}
+
+/* ============================================================
+   PAGE LAYOUT — Header, Sidebar, Content
+   ============================================================ */
+
+[class*="PageHeader"],
+[class*="pageHeader"] {
+  background: var(--tg-bg-panel) !important;
+  border-bottom: 1px solid var(--tg-line) !important;
+}
+
+/* Leave the Sonarr/Radarr logo untouched — it's already designed for dark
+   backgrounds and color-shifting it produces broken results. */
+
+/* Sidebar */
+[class*="PageSidebar"],
+[class*="pageSidebar"] {
+  background: var(--tg-bg-panel) !important;
+  border-right: 1px solid var(--tg-line) !important;
+}
+
+[class*="PageSidebarItem"],
+[class*="pageSidebarItem"] {
+  border-left: 2px solid transparent !important;
+  color: var(--tg-fg-mute) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+
+[class*="PageSidebarItem"]:hover,
+[class*="pageSidebarItem"]:hover {
+  color: var(--tg-fg) !important;
+  background: var(--tg-bg-hover) !important;
+}
+
+[class*="PageSidebarItem--active"],
+[class*="pageSidebarItem--active"],
+[class*="PageSidebarItem"][class*="active"],
+[class*="pageSidebarItem"][class*="active"] {
+  color: var(--tg-accent-hi) !important;
+  background: var(--tg-bg-row) !important;
+  border-left-color: var(--tg-accent) !important;
+}
+
+/* Page content background */
+[class*="PageContentBody"],
+[class*="pageContentBody"],
+[class*="PageContent"] {
+  background: var(--tg-bg) !important;
+  color: var(--tg-fg) !important;
+}
+
+/* Page jumbotron / titles */
+[class*="PageToolbar"],
+[class*="pageToolbar"] {
+  background: var(--tg-bg-panel) !important;
+  border-bottom: 1px solid var(--tg-line) !important;
+}
+
+[class*="PageToolbarSection"] [class*="label"] {
+  font-family: var(--tg-font-mono) !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: var(--tg-fg-mute) !important;
+}
+
+/* ============================================================
+   HEADINGS — Large titles get the serif italic treatment
+   ============================================================ */
+
+h1, h2, h3,
+[class*="pageContentHeader"],
+[class*="PageContentHeader"] {
+  font-family: var(--tg-font-serif) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  color: var(--tg-fg) !important;
+  letter-spacing: -0.01em !important;
+}
+
+h4, h5, h6 {
+  font-family: var(--tg-font-mono) !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--tg-fg-mute) !important;
+  font-size: 11px !important;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+[class*="Button"],
+button[class*="button"] {
+  border-radius: var(--tg-radius) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 12px !important;
+  text-transform: lowercase !important;
+  letter-spacing: 0.04em !important;
+  transition: all 150ms ease !important;
+}
+
+[class*="Button-default"],
+[class*="button-default"] {
+  background: var(--tg-bg-panel) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+}
+
+[class*="Button-default"]:hover,
+[class*="button-default"]:hover {
+  background: var(--tg-bg-hover) !important;
+  border-color: var(--tg-accent) !important;
+}
+
+[class*="Button-primary"],
+[class*="button-primary"] {
+  background: var(--tg-accent) !important;
+  color: #1a1308 !important;
+  border: 1px solid var(--tg-accent) !important;
+  font-weight: 600 !important;
+}
+
+[class*="Button-primary"]:hover,
+[class*="button-primary"]:hover {
+  background: var(--tg-accent-hi) !important;
+  border-color: var(--tg-accent-hi) !important;
+}
+
+[class*="Button-danger"],
+[class*="button-danger"] {
+  background: transparent !important;
+  color: var(--tg-error) !important;
+  border: 1px solid var(--tg-error) !important;
+}
+
+[class*="Button-danger"]:hover,
+[class*="button-danger"]:hover {
+  background: var(--tg-error) !important;
+  color: #f3d4cf !important;
+}
+
+[class*="Button-success"],
+[class*="button-success"] {
+  background: var(--tg-success) !important;
+  border-color: var(--tg-success) !important;
+}
+
+/* Toolbar buttons (Update All, RSS Sync, etc.) — Sonarr renders these
+   as nested elements: outer <button class="...PageToolbarButton..."> with
+   inner <div class="...Button-default..."> child. We need to OVERRIDE the
+   generic Button-default rule for ANY descendant of PageToolbar/HeaderActions.
+   
+   Specificity boost: chain attribute selectors. */
+[class*="PageToolbar"][class*="PageToolbar"] [class*="Button"],
+[class*="PageToolbar"][class*="PageToolbar"] [class*="button"],
+[class*="PageToolbar"][class*="PageToolbar"] [class*="Button-default"],
+[class*="PageToolbar"][class*="PageToolbar"] [class*="button-default"],
+[class*="PageToolbar"][class*="PageToolbar"] button,
+[class*="HeaderActionsMenu"][class*="HeaderActionsMenu"] [class*="Button"],
+[class*="HeaderActionsMenu"][class*="HeaderActionsMenu"] [class*="button"],
+[class*="HeaderActionsMenu"][class*="HeaderActionsMenu"] button,
+[class*="PageToolbarButton"][class*="PageToolbarButton"],
+[class*="PageToolbarButton"] [class*="Button-default"],
+[class*="PageToolbarButton"] [class*="button-default"],
+[class*="PageToolbarButton"] [class*="Button"],
+[class*="PageToolbarButton"] [class*="button"],
+button[class*="PageToolbarButton"] {
+  background: transparent !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--tg-fg-mute) !important;
+}
+
+[class*="PageToolbarButton"]:hover,
+[class*="PageToolbarButton"]:hover [class*="Button"],
+[class*="PageToolbarButton"]:hover [class*="button"],
+[class*="PageToolbarButton"]:hover [class*="Button-default"],
+[class*="PageToolbarButton"]:hover [class*="button-default"],
+[class*="PageToolbar"] [class*="Button"]:hover,
+[class*="PageToolbar"] [class*="button"]:hover {
+  color: var(--tg-accent-hi) !important;
+  background: var(--tg-bg-hover) !important;
+  border: 0 !important;
+}
+
+[class*="PageToolbarButton"] svg,
+[class*="HeaderActionsMenu"] svg,
+[class*="PageToolbar"] [class*="Button"] svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* ============================================================
+   INPUTS / FORMS
+   ============================================================ */
+
+input, textarea,
+[class*="TextInput"]:not([class*="container"]),
+[class*="textInput"]:not([class*="container"]),
+[class*="NumberInput"]:not([class*="container"]),
+[class*="numberInput"]:not([class*="container"]) {
+  background: var(--tg-bg) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  font-family: var(--tg-font-body) !important;
+}
+
+/* OUTER wrapper of Sonarr's EnhancedSelect — gets the border.
+   We exclude inner blocks so they stay transparent. */
+[class*="EnhancedSelectInput"]:not([class*="SelectedValue"]):not([class*="Option"]):not([class*="indicator"]):not([class*="Indicator"]):not([class*="container"]),
+[class*="enhancedSelectInput"]:not([class*="SelectedValue"]):not([class*="Option"]):not([class*="indicator"]):not([class*="Indicator"]):not([class*="container"]) {
+  background: var(--tg-bg) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  font-family: var(--tg-font-body) !important;
+  overflow: hidden !important;
+}
+
+/* INNER selected-value block — TRANSPARENT, NO border, NO background.
+   This is what was creating the box-in-box look. */
+[class*="EnhancedSelectInputSelectedValue"],
+[class*="enhancedSelectInputSelectedValue"],
+[class*="HintedSelectInputSelectedValue"],
+[class*="hintedSelectInputSelectedValue"],
+[class*="SelectedValue"],
+[class*="selectedValue"] {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--tg-fg) !important;
+}
+
+input:hover, textarea:hover,
+[class*="TextInput"]:hover,
+[class*="EnhancedSelectInput"]:not([class*="SelectedValue"]):not([class*="Option"]):not([class*="indicator"]):not([class*="Indicator"]):hover,
+[class*="enhancedSelectInput"]:not([class*="SelectedValue"]):not([class*="Option"]):not([class*="indicator"]):not([class*="Indicator"]):hover {
+  border-color: var(--tg-fg-dim) !important;
+}
+
+input:focus, textarea:focus,
+[class*="TextInput"]:focus,
+[class*="TextInput"][class*="focus"],
+[class*="EnhancedSelectInput"][class*="open"],
+[class*="enhancedSelectInput"][class*="open"],
+[class*="EnhancedSelectInput"][class*="focused"],
+[class*="enhancedSelectInput"][class*="focused"] {
+  border-color: var(--tg-accent) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--tg-accent-soft) !important;
+}
+
+/* Native <select> dropdown indicator — replace browser default with
+   a chevron in our amber color. */
+select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background: var(--tg-bg) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  font-family: var(--tg-font-body) !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='%23d97706' d='M2 4 L6 8 L10 4 Z'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 10px 10px !important;
+  padding-right: 28px !important;
+}
+
+/* EnhancedSelect indicator: blend into the wrapper. No own background,
+   no separator. The chevron alone in amber.
+   We aggressively kill ALL borders/backgrounds on any element inside the
+   indicator block, because Sonarr sometimes wraps the chevron in 1-2
+   nested divs each with their own styling. */
+[class*="EnhancedSelectInput"] [class*="indicator"],
+[class*="enhancedSelectInput"] [class*="indicator"],
+[class*="EnhancedSelectInput"] [class*="Indicator"],
+[class*="enhancedSelectInput"] [class*="Indicator"],
+[class*="EnhancedSelectInput"] [class*="indicator"] *,
+[class*="enhancedSelectInput"] [class*="indicator"] *,
+[class*="EnhancedSelectInput"] [class*="Indicator"] *,
+[class*="enhancedSelectInput"] [class*="Indicator"] *,
+[class*="dropdownIndicator"],
+[class*="DropdownIndicator"] {
+  background: transparent !important;
+  color: var(--tg-accent) !important;
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Some Sonarr builds wrap the indicator with a ::before/::after divider
+   that has its own background. Kill those. */
+[class*="EnhancedSelectInput"] [class*="indicator"]::before,
+[class*="EnhancedSelectInput"] [class*="indicator"]::after,
+[class*="enhancedSelectInput"] [class*="indicator"]::before,
+[class*="enhancedSelectInput"] [class*="indicator"]::after,
+[class*="EnhancedSelectInput"] [class*="Indicator"]::before,
+[class*="EnhancedSelectInput"] [class*="Indicator"]::after {
+  background: transparent !important;
+  border: 0 !important;
+  display: none !important;
+}
+
+[class*="EnhancedSelectInput"] [class*="indicator"] svg,
+[class*="enhancedSelectInput"] [class*="indicator"] svg,
+[class*="EnhancedSelectInput"] [class*="Indicator"] svg,
+[class*="enhancedSelectInput"] [class*="Indicator"] svg,
+[class*="dropdownIndicator"] svg,
+[class*="DropdownIndicator"] svg {
+  fill: var(--tg-accent) !important;
+  color: var(--tg-accent) !important;
+  stroke: var(--tg-accent) !important;
+}
+
+/* Kill Sonarr's default blue focus ring globally. Sonarr uses
+   :focus-within with a hardcoded blue color in some places. */
+*:focus,
+*:focus-within,
+[class*="hasError"],
+[class*="hasFocus"] {
+  outline-color: var(--tg-accent) !important;
+}
+
+[class*="EnhancedSelectInput"]:focus,
+[class*="EnhancedSelectInput"]:focus-within,
+[class*="enhancedSelectInput"]:focus,
+[class*="enhancedSelectInput"]:focus-within,
+[class*="TextInput"]:focus,
+[class*="TextInput"]:focus-within {
+  border-color: var(--tg-accent) !important;
+  box-shadow: 0 0 0 1px var(--tg-accent-soft) !important;
+  outline: none !important;
+}
+
+/* Dropdown popover — the menu that opens below the select.
+   Force solid background, not transparent. */
+[class*="EnhancedSelectInputOptions"],
+[class*="enhancedSelectInputOptions"],
+[class*="OptionsContent"],
+[class*="optionsContent"],
+[class*="OptionsModalContent"],
+[class*="optionsModalContent"],
+[class*="EnhancedSelectInput-options"],
+[class*="enhancedSelectInput-options"] {
+  background: var(--tg-bg-panel) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6) !important;
+}
+
+[class*="EnhancedSelectInputOption"],
+[class*="enhancedSelectInputOption"] {
+  background: var(--tg-bg-panel) !important;
+  color: var(--tg-fg) !important;
+  border-bottom: 1px solid var(--tg-line-soft) !important;
+}
+
+[class*="EnhancedSelectInputOption"]:hover,
+[class*="enhancedSelectInputOption"]:hover,
+[class*="EnhancedSelectInputOption"][class*="isMouseOver"],
+[class*="enhancedSelectInputOption"][class*="isMouseOver"],
+[class*="EnhancedSelectInputOption"][class*="selected"],
+[class*="enhancedSelectInputOption"][class*="selected"] {
+  background: var(--tg-bg-hover) !important;
+  color: var(--tg-accent-hi) !important;
+}
+
+/* CHECKBOXES — Sonarr's CheckInput uses a custom rendered box.
+   Make the checked state amber instead of Sonarr blue. */
+[class*="CheckInput"] input[type="checkbox"],
+[class*="checkInput"] input[type="checkbox"],
+input[type="checkbox"] {
+  accent-color: var(--tg-accent) !important;
+}
+
+/* The custom-styled checkbox box itself */
+[class*="CheckInput"] [class*="checkbox"],
+[class*="checkInput"] [class*="checkbox"] {
+  background: var(--tg-bg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+}
+
+[class*="CheckInput"] [class*="isChecked"],
+[class*="checkInput"] [class*="isChecked"],
+[class*="CheckInput"] [class*="checked"]:not([class*="unchecked"]),
+[class*="checkInput"] [class*="checked"]:not([class*="unchecked"]) {
+  background: var(--tg-accent) !important;
+  border-color: var(--tg-accent) !important;
+}
+
+[class*="CheckInput"] svg,
+[class*="checkInput"] svg {
+  color: #1a1308 !important;
+  fill: #1a1308 !important;
+}
+
+[class*="FormLabel"],
+[class*="formLabel"],
+label {
+  color: var(--tg-fg-mute) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+
+[class*="FormGroup"],
+[class*="formGroup"] {
+  border-bottom: 1px solid var(--tg-line-soft) !important;
+}
+
+/* Checkbox */
+[class*="checkInput"] [class*="checkbox"],
+[class*="CheckInput"] [class*="checkbox"] {
+  accent-color: var(--tg-accent) !important;
+}
+
+/* ============================================================
+   TABLES — series list, history, queue, etc.
+   ============================================================ */
+
+table, [class*="Table"] {
+  background: transparent !important;
+  color: var(--tg-fg) !important;
+}
+
+[class*="Table"] thead,
+[class*="TableHeader"] {
+  background: var(--tg-bg-panel) !important;
+  border-bottom: 1px solid var(--tg-line) !important;
+}
+
+[class*="TableHeaderCell"] {
+  color: var(--tg-fg-mute) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  font-weight: 500 !important;
+}
+
+[class*="TableRow"] {
+  background: var(--tg-bg-panel) !important;
+  border-bottom: 1px solid var(--tg-line-soft) !important;
+}
+
+[class*="TableRow"]:nth-child(even) {
+  background: var(--tg-bg-row) !important;
+}
+
+[class*="TableRow"]:hover {
+  background: var(--tg-bg-hover) !important;
+}
+
+[class*="TableRow"][class*="selected"] {
+  background: var(--tg-bg-hover) !important;
+  outline: 1px solid var(--tg-accent-soft);
+}
+
+/* ============================================================
+   POSTERS / CARDS — series & movie grids
+   ============================================================ */
+
+[class*="SeriesPoster"],
+[class*="MoviePoster"],
+[class*="seriesPoster"],
+[class*="moviePoster"] {
+  background: var(--tg-bg-panel) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 200ms ease;
+}
+
+[class*="SeriesPoster"]:hover,
+[class*="MoviePoster"]:hover,
+[class*="seriesPoster"]:hover,
+[class*="moviePoster"]:hover {
+  border-color: var(--tg-accent) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+}
+
+/* The corner-notch ornament from tg-archiv on poster top-right */
+[class*="SeriesPoster"]::before,
+[class*="MoviePoster"]::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 14px; height: 14px;
+  background: linear-gradient(225deg, var(--tg-accent) 0% 50%, transparent 50% 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+[class*="SeriesIndex"] [class*="title"],
+[class*="MovieIndex"] [class*="title"],
+[class*="seriesPosterFooter"] [class*="title"],
+[class*="moviePosterFooter"] [class*="title"] {
+  font-family: var(--tg-font-serif) !important;
+  font-style: italic !important;
+  color: var(--tg-fg) !important;
+}
+
+/* List view / overview cards */
+[class*="SeriesOverview"],
+[class*="MovieOverview"] {
+  background: var(--tg-bg-panel) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+}
+[class*="SeriesOverview"]:hover,
+[class*="MovieOverview"]:hover {
+  border-color: var(--tg-line) !important;
+  background: var(--tg-bg-row) !important;
+}
+
+/* ============================================================
+   SERIES/MOVIE DETAIL PAGE
+   ============================================================ */
+
+[class*="SeriesDetails"],
+[class*="MovieDetails"],
+[class*="seriesDetails"],
+[class*="movieDetails"] {
+  background: var(--tg-bg) !important;
+}
+
+[class*="SeriesDetails"] [class*="header"],
+[class*="MovieDetails"] [class*="header"] {
+  background: linear-gradient(180deg, transparent 0%, var(--tg-bg) 90%) !important;
+}
+
+/* Season / episode tables */
+[class*="SeasonInfo"],
+[class*="seasonInfo"] {
+  background: var(--tg-bg-panel) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+}
+
+[class*="EpisodeRow"],
+[class*="episodeRow"] {
+  border-bottom: 1px solid var(--tg-line-soft) !important;
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+[class*="ModalBackdrop"],
+[class*="modalBackdrop"] {
+  background: rgba(0,0,0,0.85) !important;
+  backdrop-filter: blur(4px);
+}
+
+[class*="Modal"]:not([class*="Backdrop"]):not([class*="modalContent"]) > div,
+[class*="ModalContent"],
+[class*="modalContent"] {
+  background: var(--tg-bg-panel) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  box-shadow: 0 12px 60px rgba(0,0,0,0.7);
+}
+
+[class*="ModalHeader"],
+[class*="modalHeader"] {
+  background: var(--tg-bg) !important;
+  border-bottom: 1px solid var(--tg-line) !important;
+  padding: 18px 24px !important;
+}
+
+[class*="ModalHeader"] h2,
+[class*="modalHeader"] h2 {
+  font-family: var(--tg-font-serif) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+}
+
+[class*="ModalFooter"],
+[class*="modalFooter"] {
+  background: var(--tg-bg) !important;
+  border-top: 1px solid var(--tg-line) !important;
+}
+
+/* ============================================================
+   LABELS / BADGES / TAGS
+   ============================================================ */
+
+[class*="Label"],
+[class*="label"]:not(label):not([class*="formLabel"]) {
+  border-radius: var(--tg-radius) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  font-weight: 500 !important;
+}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+
+[class*="ProgressBar"],
+[class*="progressBar"] {
+  background: var(--tg-bg-row) !important;
+  border-radius: var(--tg-radius) !important;
+  border: 1px solid var(--tg-line) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 10px !important;
+}
+
+[class*="progressBar_progress"],
+[class*="ProgressBar_progress"] {
+  background: var(--tg-accent) !important;
+}
+
+/* ============================================================
+   CALENDAR
+   ============================================================ */
+
+[class*="Calendar"] [class*="day"],
+[class*="calendar"] [class*="day"] {
+  background: var(--tg-bg-panel) !important;
+  border: 1px solid var(--tg-line-soft) !important;
+}
+
+[class*="Calendar"] [class*="isToday"],
+[class*="calendar"] [class*="isToday"] {
+  background: var(--tg-bg-row) !important;
+  border-color: var(--tg-accent) !important;
+}
+
+[class*="CalendarEvent"],
+[class*="calendarEvent"] {
+  background: var(--tg-bg-row) !important;
+  border-left: 2px solid var(--tg-accent) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 11px !important;
+}
+
+[class*="CalendarEvent"][class*="downloaded"] {
+  border-left-color: var(--tg-success) !important;
+}
+
+[class*="CalendarEvent"][class*="missing"] {
+  border-left-color: var(--tg-error) !important;
+}
+
+/* ============================================================
+   QUEUE / ACTIVITY
+   ============================================================ */
+
+[class*="QueueRow"],
+[class*="queueRow"] {
+  background: var(--tg-bg-panel) !important;
+}
+
+[class*="QueueStatus"][class*="downloading"] {
+  color: var(--tg-accent-hi) !important;
+}
+[class*="QueueStatus"][class*="completed"] {
+  color: var(--tg-success) !important;
+}
+[class*="QueueStatus"][class*="failed"] {
+  color: var(--tg-error) !important;
+}
+
+/* ============================================================
+   SCROLLBARS
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--tg-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--tg-line);
+  border-radius: var(--tg-radius);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--tg-fg-dim);
+}
+* {
+  scrollbar-color: var(--tg-line) var(--tg-bg);
+  scrollbar-width: thin;
+}
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+a {
+  color: var(--tg-accent-hi) !important;
+}
+a:hover {
+  color: var(--tg-accent) !important;
+}
+
+/* ============================================================
+   TOOLTIPS / POPOVERS
+   ============================================================ */
+
+[class*="Tooltip"],
+[class*="tooltip"],
+[class*="Popover"],
+[class*="popover"] {
+  background: var(--tg-bg) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 11px !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4) !important;
+}
+
+/* ============================================================
+   SETTINGS CARDS — Indexers, Download Clients, Quality Profiles,
+   Custom Formats, Metadata, Connect (notifications), Import Lists,
+   Lists, etc.
+   ============================================================ */
+
+/* Sonarr renders these as <button class="Card-card-X"> with a colored
+   underlay element behind it. The underlay is what gives each card its
+   accent color (e.g. teal for "German" in the screenshot). We tone all
+   underlay accents down to our amber. */
+
+[class*="Card-card"],
+[class*="Card_card"] {
+  background: var(--tg-bg-panel) !important;
+  color: var(--tg-fg) !important;
+  border: 1px solid var(--tg-line) !important;
+  border-radius: var(--tg-radius) !important;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+[class*="Card-card"]:hover,
+[class*="Card_card"]:hover {
+  border-color: var(--tg-accent) !important;
+  transform: translateY(-1px);
+}
+
+/* The colored underlay: kill the saturation, let our theme bleed through */
+[class*="Card-underlay"],
+[class*="Card_underlay"] {
+  background: var(--tg-bg-row) !important;
+  filter: saturate(0) !important;
+  opacity: 0.5 !important;
+}
+
+/* Inside the card, the title/heading */
+[class*="Card-card"] h3,
+[class*="Card_card"] h3,
+[class*="Card-name"],
+[class*="Card_name"] {
+  color: var(--tg-fg) !important;
+  font-family: var(--tg-font-serif) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+}
+
+/* Card body text */
+[class*="Card-card"] [class*="description"],
+[class*="Card_card"] [class*="description"],
+[class*="Card-card"] [class*="message"],
+[class*="Card_card"] [class*="message"] {
+  color: var(--tg-fg-mute) !important;
+}
+
+/* Tag-pills inside cards (e.g. "GERMAN GERMAN DUB" labels) */
+[class*="Card-card"] [class*="Label"],
+[class*="Card_card"] [class*="Label"],
+[class*="Card-card"] [class*="tag"],
+[class*="Card_card"] [class*="tag"] {
+  background: var(--tg-bg) !important;
+  color: var(--tg-accent-hi) !important;
+  border: 1px solid var(--tg-accent-soft) !important;
+  display: inline-block !important;
+  width: auto !important;
+}
+
+/* Action icons (clone, edit) in the corner */
+[class*="Card-card"] [class*="action"],
+[class*="Card_card"] [class*="action"] {
+  color: var(--tg-fg-mute) !important;
+  opacity: 0.7;
+}
+[class*="Card-card"] [class*="action"]:hover,
+[class*="Card_card"] [class*="action"]:hover {
+  color: var(--tg-accent) !important;
+  opacity: 1;
+}
+
+/* The "Add new" / dashed empty card */
+[class*="AddCard"],
+[class*="addCard"],
+[class*="Card-card"][class*="add"] {
+  border: 1px dashed var(--tg-line) !important;
+  background: transparent !important;
+  color: var(--tg-fg-mute) !important;
+}
+[class*="AddCard"]:hover,
+[class*="addCard"]:hover {
+  border-color: var(--tg-accent) !important;
+  color: var(--tg-accent-hi) !important;
+}
+
+/* Links inside cards/buttons (the "Link-link-..." class from the screenshot) */
+[class*="Link-link"],
+[class*="Link_link"] {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* ============================================================
+   SETTINGS PAGES — long lists of form groups
+   ============================================================ */
+
+[class*="advancedSettings"],
+[class*="AdvancedSettings"] {
+  color: var(--tg-warn) !important;
+  font-family: var(--tg-font-mono) !important;
+  font-size: 11px !important;
+}
+
+[class*="settingsToolbar"],
+[class*="SettingsToolbar"] {
+  background: var(--tg-bg-panel) !important;
+  border-bottom: 1px solid var(--tg-line) !important;
+}
+
+/* ============================================================
+   LOADING SPINNERS
+   ============================================================ */
+
+[class*="LoadingIndicator"] svg,
+[class*="loadingIndicator"] svg,
+[class*="Spinner"] {
+  stroke: var(--tg-accent) !important;
+  color: var(--tg-accent) !important;
+}
+
+/* ============================================================
+   END
+   ============================================================ */
